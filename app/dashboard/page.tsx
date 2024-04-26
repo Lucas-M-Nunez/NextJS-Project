@@ -1,10 +1,36 @@
-export default function Page() {
-    return ( 
-        <div>
-            <h1>Dashboard Page N</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum hic laboriosam provident doloremque molestiae facere ad porro quisquam, incidunt quidem natus fugit eligendi ipsa nemo reprehenderit commodi, minus eveniet a!
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequatur, pariatur maxime facilis laudantium quibusdam voluptate? Eius, repellendus amet fuga cupiditate dolores ipsum quisquam numquam officiis sunt sequi odio! Corporis, fugit!
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aut vero saepe error asperiores? Dicta corporis distinctio eos odio assumenda ducimus ipsum. Deserunt accusantium vel exercitationem vero mollitia id sequi voluptatem.
-            </p>
-        </div>
-)}
+import { Card } from '@/app/ui/dashboard/cards';
+import RevenueChart from '@/app/ui/dashboard/revenue-chart';
+import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+import { poppins } from '@/app/ui/fonts';
+import { fetchRevenue, fetchLatestInvoices, fetchCardData} from '../lib/data';
+ 
+export default async function Page() {
+    const revenue = await fetchRevenue();
+    const latestInvoices = await fetchLatestInvoices();
+    const { numberOfCustomers,
+        numberOfInvoices,
+        totalPaidInvoices,
+        totalPendingInvoices, } = await fetchCardData();
+
+  return (
+    <main>
+      <h1 className={`${poppins.className} mb-4 text-xl md:text-2xl`}>
+        Dashboard
+      </h1>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Card title="Collected" value={totalPaidInvoices} type="collected" />
+        <Card title="Pending" value={totalPendingInvoices} type="pending" />
+        <Card title="Total Invoices" value={numberOfInvoices} type="invoices" />
+        <Card
+          title="Total Customers"
+          value={numberOfCustomers}
+          type="customers"
+        />
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
+        <RevenueChart revenue={revenue}  />
+        <LatestInvoices latestInvoices={latestInvoices} />
+      </div>
+    </main>
+  );
+}
